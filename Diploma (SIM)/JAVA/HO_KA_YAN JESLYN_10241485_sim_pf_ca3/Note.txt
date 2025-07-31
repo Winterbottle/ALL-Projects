@@ -1,0 +1,232 @@
+Hi Ms XXX,
+
+I have some questions regarding CA3. Please kindly help!
+
+1) Add/Delete admin account
+Is it store the list of admin account in a text file?
+
+2) Where to invoke add/delete rental record?
+
+3) sno 7 Show individual user matched books (Based on their genre preferences)
+When user select option 7, beside listing out all the books that matches their genre preferences.
+I also tag the matches book as rental.
+
+if don't to do in option 7, that mean need a new options
+Add rental records
+Delete rental records
+
+
+A short reflection on this assignment with the following pointers:
+- Things you have learnt through doing the assignments
+
+1. A good IDE can really help to code much faster. I explorer using eclipse to write the program beside using IntelliJ.
+
+2. This assignment provides an opportunity for me to learn, practice and strength my java programming and debugging skill. 
+I realised that when the program is not working as expected, it is a good practice to print out the object to examine the output of each step. 
+
+3. It also teaches me how to do refactoring of codes to make it more reusable and readable. After writing the basic skeleton of the program, I realised that there are many replicated codes.
+Such as search the list for the object. Hence I wrote a common function to search for the list so that it can be easily called by other functions.
+
+4. It is also important to design the overall program flow before starting on the coding. 
+	Having an overall structure of the program enables me to know the interdependency of the functions 
+	e.g. It is more efficient to code the function for show book list first so that I can use this function to check the result of my Add book and Delete book functions.
+	
+5. It is also important to consider user experience during the design of the program. 
+	E.g. To delete book, it should also show book list first otherwise user would not know the record id and book id record to remove. Such requirement is not listed in the assignment.
+	
+	
+- Screenshot and explanation on unresolved/unachievable requirements.
+
+unresolved
+All requirements fulfilled. However, there can be some future enhancement for consideration.
+
+Future enhancement
+1) password should be masked and impose restrictions such as must contain 8 characters with combination of upper and lower case to make the authentication secure.
+2) Sign in with incorrect user name or password, the program exit, it should allow user to enter again.
+3) Once error exception encounter, system go back to option selection instead of allowing user to re-enter.
+4) When the program start, it will load the Arraylist of adminAccountList, userAccountList, bookList and rentalList from the respective text file. When the program end, it should save by overwrite the text files. Due to insufficient time, I will leave this feature for future enhancement.
+5) All the record IDs e.g. user ID, book ID, rental ID should be auto-generated so that user does not need to keep track of the unused numbers. 
+
+
+unachievable
+1) To move this application to enterprise level, we need to use a database and make this a web application with a web server.
+2) To build a GUI for the application so that it is easier for visualisation and navigation, especially for the function to remove rental records. 
+It should allow user to choose to remove for which user and which records (it can be multiple records). 
+Now the program lists all the rental records so that admin can pick and enter the one to remove one by one. 
+The list will be very long for actual implementation. Admin would need to scroll for a long list to search for the record ID to remove.
+3) In real life, book names can contain non ASCII characters such as Chinese book names, the program should be able to handle other non ASCII characters book names.
+4) Since the output is in form of command line, display of output in a organised format is challenging. I use tab to print the different elements in columns. However if the name or description is too long, the tab will not be aligned and the result will not be shown in a neat column.
+  
+
+
+- Not more than 1000 words
+
+
+
+
+
+
+============================================
+try{
+}
+catch (NumberFormatException nfe) {
+			System.err.println("Exception Encounter: integer expected. Please enter an integer");
+} 
+catch (Exception e) {
+	System.err.println("Exception: " + e);
+}
+finally {//Always run even after exception
+			sc.close(); //This release
+}
+
+
+static - one class, don't need to new
+
+public static void main(String[] args) { //Main always specify in this way. It is a static
+
+In static class, attributes or method, also need to be static
+private static ArrayList<AdminAccount> adminAccountList = new ArrayList<>();
+private static void displayMenu() {
+
+scanner = new Scanner(System.in);
+
+sc = new Scanner(new File("src/AdminAccountList.txt"));
+sc.useDelimiter(System.getProperty("line.separator"));
+
+
+System.err.println("XX"); //This will display as red front
+======================================
+Presentation
+
+Run program
+
+Before I run thru my system, I give an overview how my system work first.
+When I run the program
+first, it will load the predefine admin account, booklist, user account, rental list from the respective text file.
+
+Click thru the text file, then stop at admin account text file.
+the # mean comment, the program skip
+pipe line mean delimiter btw fields
+
+So after load the predefine data to the arraylist, then system will do the authenication.
+
+Run the program
+First part load the predefine data from the text file and I print it out
+
+So the program start by entering the username and password
+
+my username is neko, password is password
+-------------------------------------------------------
+Sign in successfully, the system will display
+Welcome Jeslyn! and the Menu
+-------------------------------------------------------
+B4 we do add and delete admin account, let us enter
+3.  Show admin account list 
+These are the admin account perloaded.
+-------------------------------------------------------
+Next we press 1 to Add admin account
+Please enter the below data item to create Admin Account
+Admin ID: 4444
+Admin Name: Jason
+Admin User Name: jj
+min Password: jj
+Record Added Successfully!
+Press 3 to Show admin account list  
+Jason is added.
+-------------------------------------------------------
+Next press 2 to delete admin account
+What is the Admin ID to be deleted? 2222
+Record Deleted Successfully!
+Press 3 to Show admin account list  
+admin id 2222 is deleted
+
+-------------------------------------------------------
+Enter 6 to show the book list
+-------------------------------------------------------
+Enter 4 to Add book
+Please enter the below data item to create Book
+Book ID: 6001
+Book Name: XXXXXXXXXXX
+Book Description: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Book Genre: Historical
+bookRentalPrice: $42.20
+Record Added Successfully!
+
+Enter 6 to show the book list
+the new book added successfully
+
+
+Enter 5 to delete the book
+What is the book ID to be deleted? 6001
+-------------------------------------------------------
+Enter 6 to show the book list
+-------------------------------------------------------
+next 7.  Most expensive book rental  
+Charlie and The Chocolate Factory is the most expensive $65.65
+-------------------------------------------------------
+next 8.  Cheapest book rental     
+Devil in a Blue Dress is the most cheapest $10.10
+-------------------------------------------------------
+Enter 11. Show user account list    
+I have 2 predefine user account
+-------------------------------------------------------
+Enter    9 to  Add user account     
+Please enter the below data item to User Account
+User ID: 6002
+User First Name: XXXXXX
+User Last Name: XXXXXXX
+User Create Date in dd/MM/yyyy format: 08/02/2023
+Genre Preference (if no more genre preference enter 'N'): Horror
+Genre Preference (if no more genre preference enter 'N'): Fantasy
+Genre Preference (if no more genre preference enter 'N'): N
+Record Added Successfully!
+
+Enter 11. Show user account list 
+We can see the new user added to the list.
+-------------------------------------------------------
+Enter 10 to delete user account
+What is the User ID to be deleted? 5002
+Record Deleted Successfully!
+
+Enter 11. Show user account list 
+We can see the user deleted from the list.
+-------------------------------------------------------
+next Enter 12. List all user rental records 
+There are 2 rental record
+------------------------------------------------------
+ Enter 13 to add user rental records 
+ Please provide the rental ID: 3001
+Please provide the Book ID to add to the rental records: 4002
+Book added to rental record Successfully!
+Enter 12. List all user rental records 
+You can see that rental id 3001, one more book added
+------------------------------------------------------
+ Enter 14 to Remove user rental records 
+Enter the Book ID to remove from the rental records: 2001
+]Book removed from rental record Successfully!
+Enter 12. List all user rental records 
+You can see that rental id 3001, one book is deleted
+ ------------------------------------------------------
+ 
+
+Next is 15. Show top user that rent the most books        
+B4 we do 15, let see what is the list of user rental records
+press 12
+This are the list of user rental records
+
+Enter 15. 
+the top user that rent the most books is Peter, because he rant 3 books.
+
+Next 16. Show individual user matched books
+Steven Chia, his genre preferences are Horror and Thriller and there are 4 books that matches his genre preferences.
+
+For Peter Goh, his genre preference are Historical and Fantasy. 
+Therte are 4 books that matches his genre preference. 
+
+16. Show individual user matched books (Based on their genre preferences)
+
+Last, if you press E for exit
+System will say "Thank you and goodbye."
+*******Program End*********
+ 
+

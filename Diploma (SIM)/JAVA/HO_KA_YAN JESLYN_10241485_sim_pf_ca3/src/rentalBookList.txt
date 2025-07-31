@@ -1,0 +1,9 @@
+#First Line:	rentalId|rentalDate|userId
+#Second Line:	B|rentalId|bookId
+R|3001|01/02/2023|5001
+B|3001|4001
+B|3001|2001
+R|3002|2/02/2023|5002
+B|3002|3001
+B|3002|3002
+B|3002|5001

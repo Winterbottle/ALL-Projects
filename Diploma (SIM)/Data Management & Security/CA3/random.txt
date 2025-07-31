@@ -1,0 +1,177 @@
+CREATE TABLE STREETFIGHTER.USER (
+	EMAIL		VARCHAR(255) 	PRIMARY KEY,
+	USERNAME 	VARCHAR(30) 	NOT NULL,
+	FIRST_NAME	VARCHAR(55) 	NOT NULL,
+	LAST_NAME	VARCHAR(55) 	NOT NULL,
+	PWDS		VARCHAR(16) 	NOT NULL
+);
+
+-------------------------------------------------------------
+CREATE TABLE STREETFIGHTER.USER_TOPIC (
+	EMAIL		VARCHAR(255),
+	TOPIC_ID 	INT,
+	PRIMARY KEY (EMAIL,TOPIC_ID),
+	FOREIGN KEY (EMAIL)	REFERENCES STREETFIGHTER.USER(EMAIL),
+	FOREIGN KEY (TOPIC_ID)	REFERENCES STREETFIGHTER.TOPIC(TOPIC_ID)
+);
+
+-------------------------------------------------------------
+CREATE TABLE STREETFIGHTER.USER_SUBSCRIPTION (
+	EMAIL VARCHAR(255),
+	SUBSCRIBE_TOPIC_ID INT,
+	PRIMARY KEY (EMAIL,TOPIC_ID),
+	FOREIGN KEY (EMAIL)	REFERENCES STREETFIGHTER.USER(EMAIL),
+	FOREIGN KEY (TOPIC_ID)	REFERENCES STREETFIGHTER.TOPIC(TOPIC_ID)
+);
+
+-------------------------------------------------------------
+CREATE TABLE STREETFIGHTER.CD_TOPIC_CATEGORY (
+	TOPIC_CATEGORY_ID INT AUTO_INCREMENT 	PRIMARY KEY,
+	TOPIC_CATEGORY VARCHAR(50) NOT NULL
+);
+
+-------------------------------------------------------------
+
+CREATE TABLE STREETFIGHTER.TOPIC (
+	TOPIC_ID			INT			AUTO_INCREMENT 		PRIMARY KEY,
+	TOPIC_TITLE			VARCHAR(300) 	NOT NULL,
+	DTE_CR_TOPIC		DATETIME 		NOT NULL			DEFAULT CURRENT_TIMESTAMP,
+	TOPIC_CATEGORY_ID		INT(9) 			NOT NULL,
+	
+	FOREIGN KEY (TOPIC_CATEGORY_ID)		REFERENCES STREETFIGHTER.CD_TOPIC_CATEGORY(TOPIC_CATEGORY_ID)
+);
+
+-------------------------------------------------------------
+CREATE TABLE STREETFIGHTER.FORUM (
+	FORUM_ID		INT			AUTO_INCREMENT 	PRIMARY KEY,
+	TOPIC_ID		INT			NOT NULL,
+	POSTER_EMAIL	VARCHAR(255) 	NOT NULL,
+	POST_CONTENT	VARCHAR(500) 	NOT NULL,
+	DTE_CR_POST		DATETIME 		NOT NULL	DEFAULT CURRENT_TIMESTAMP,
+
+	FOREIGN KEY (TOPIC_ID)			REFERENCES STREETFIGHTER.TOPIC(TOPIC_ID),
+	FOREIGN KEY (POSTER_EMAIL)		REFERENCES STREETFIGHTER.USER(EMAIL)
+);
+
+=================================================================================
+INSERT streetfighter.user  (email, username, first_name, last_name, pwds) VALUES ('takanaka@capcom.com','takanaka','Takayuki','Nakayama','dzm6mw185bgibmj3');
+INSERT streetfighter.user  (email, username, first_name, last_name, pwds) VALUES ('tsuchiya@capcom.com','tsuchiya','Kazuhiro','Tsuchiya','ivni4d6q0ddomzhr');
+INSERT streetfighter.user  (email, username, first_name, last_name, pwds) VALUES ('yoshiono@capcom.com','theoneono','Yoshinori','Ono','3vpdn1kxarb25dn9');
+INSERT streetfighter.user  (email, username, first_name, last_name, pwds) VALUES ('yusuke@capcom.com','yusuke','Yusuke','Hashimoto','2z24frcnq41rvw4k');
+INSERT streetfighter.user  (email, username, first_name, last_name, pwds) VALUES ('theterayama@capcom.com','yoshitera','Yoshiya','Terayama','pxtknpr3kxqxxupb');
+SELECT * FROM streetfighter.user;
+=================================================================================
+INSERT streetfighter.cd_topic_category  (topic_category) values ('Mechanics & Balancing');
+INSERT streetfighter.cd_topic_category  (topic_category) VALUES ('General');
+INSERT streetfighter.cd_topic_category  (topic_category) VALUES ('New Features');
+INSERT streetfighter.cd_topic_category  (topic_category) VALUES ('Asset Creation');
+SELECT * FROM streetfighter.cd_topic_category;
+=================================================================================
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('Drive impact is overpowered, how do we rebalance it?', STR_TO_DATE("29/10/2021 11:22:23", "%d/%m/%Y %H:%i:%s"), 1);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('Launch date is 2 June 2023, get ready!', STR_TO_DATE("12/11/2022 14:12:43", "%d/%m/%Y %H:%i:%s"), 2);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('New year''s cohesion dinner', STR_TO_DATE("01/01/2023 00:00:00", "%d/%m/%Y %H:%i:%s"), 2);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('I''ve been fired. Goodbye!', STR_TO_DATE("06/05/2021 07:08:34", "%d/%m/%Y %H:%i:%s"), 2);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('New character idea: Ballet dancer', STR_TO_DATE("22/06/2022 04:19:33", "%d/%m/%Y %H:%i:%s"), 3);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('New character idea: Female roman warrior', STR_TO_DATE("21/06/2022 03:23:13", "%d/%m/%Y %H:%i:%s"), 3);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('New BGM compositions', STR_TO_DATE("21/04/2021 11:11:12", "%d/%m/%Y %H:%i:%s"), 4);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('Should we bring parry back?', STR_TO_DATE("07/06/2021 05:45:45", "%d/%m/%Y %H:%i:%s"), 1);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('More new BGM compositions', STR_TO_DATE("28/02/2021 02:03:34", "%d/%m/%Y %H:%i:%s"), 4);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('Blanka doll giveaway', STR_TO_DATE("06/12/2020 08:18:24", "%d/%m/%Y %H:%i:%s"), 2);
+INSERT streetfighter.topic  (topic_title, dte_cr_topic, topic_category_id) values ('What do you guys think of having a Drive Gauge?', STR_TO_DATE("01/01/2023 03:19:45", "%d/%m/%Y %H:%i:%s"), 3);
+SELECT * FROM streetfighter.topic;
+=================================================================================
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('takanaka@capcom.com',		1);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('takanaka@capcom.com',		2);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('tsuchiya@capcom.com',		3);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('yoshiono@capcom.com',		4);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('takanaka@capcom.com',		5);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('yusuke@capcom.com',		6);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('theterayama@capcom.com',	7);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('yusuke@capcom.com',		8);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('theterayama@capcom.com',	9);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('yoshiono@capcom.com',		10);
+INSERT streetfighter.USER_TOPIC  (EMAIL, TOPIC_ID) values ('tsuchiya@capcom.com',		11);
+SELECT * FROM streetfighter.user_topic;
+=================================================================================
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (1, 'takanaka@capcom.com', 'There are too many hits of armor.', STR_TO_DATE("29/10/2021 11:22:23", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (1, 'yoshiono@capcom.com', 'I think it is fine. I like it.', STR_TO_DATE("30/10/2021 19:15:11", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (1, 'yusuke@capcom.com', 'Same here.', STR_TO_DATE("31/10/2021 14:35:31", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (2, 'takanaka@capcom.com', 'We will make lots of money.', STR_TO_DATE("12/11/2022 14:12:43", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (2, 'theterayama@capcom.com', 'Lets go!', STR_TO_DATE("12/11/2022 16:32:53", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (3, 'tsuchiya@capcom.com', 'Let''s have a good meal together.', STR_TO_DATE("01/01/2023 00:00:00", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (3, 'yoshiono@capcom.com', 'See you there!', STR_TO_DATE("01/01/2023 00:13:34", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (4, 'yoshiono@capcom.com', 'No one likes me.', STR_TO_DATE("06/05/2021 07:08:34", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (5, 'takanaka@capcom.com', 'Let''s call her MANon.', STR_TO_DATE("22/06/2022 04:19:33", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (5, 'theterayama@capcom.com', 'Sick idea bro.', STR_TO_DATE("23/06/2022 06:28:53", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (6, 'yusuke@capcom.com', 'Let''s all her Marisa.', STR_TO_DATE("24/06/2022 03:23:13", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (6, 'tsuchiya@capcom.com', 'Why give her a girly name?', STR_TO_DATE("21/06/2022 01:21:32", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (7, 'theterayama@capcom.com', 'Check it out.', STR_TO_DATE("22/04/2021 11:11:12", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (7, 'takanaka@capcom.com', 'Nobody cares.', STR_TO_DATE("23/04/2021 13:28:31", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (8, 'yusuke@capcom.com', 'Is it too overpowered?', STR_TO_DATE("07/06/2021 05:45:45", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (8, 'yoshiono@capcom.com', 'I think it''s fine.', STR_TO_DATE("08/06/2021 01:23:15", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (9, 'theterayama@capcom.com', 'Please care guys.', STR_TO_DATE("28/02/2021 02:03:34", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (9, 'takanaka@capcom.com', 'Nobody cares.', STR_TO_DATE("02/03/2021 01:15:33", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (9, 'yoshiono@capcom.com', 'I care.', STR_TO_DATE("02/03/2021 04:12:14", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (10, 'yoshiono@capcom.com', 'Before I leave.', STR_TO_DATE("06/12/2020 08:18:24", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (10, 'yoshiono@capcom.com', 'Don''t ignore me.', STR_TO_DATE("09/12/2020 12:38:11", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (10, 'yoshiono@capcom.com', 'I''m gonna cry.', STR_TO_DATE("12/12/2020 23:48:41", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (11, 'tsuchiya@capcom.com', 'Will it be fun?', STR_TO_DATE("01/01/2023 03:19:45", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (11, 'yusuke@capcom.com', 'Yes I think it will be.', STR_TO_DATE("02/01/2023 17:34:23", "%d/%m/%Y %H:%i:%s"));
+INSERT streetfighter.forum  (topic_id, poster_email, post_content, dte_cr_post) values (11, 'theterayama@capcom.com', 'I think so too.', STR_TO_DATE("04/01/2023 20:13:33", "%d/%m/%Y %H:%i:%s"));
+SELECT * FROM streetfighter.forum;
+
+=================================================================
+
+
+SELECT * FROM streetfighter.user;
+SELECT * FROM streetfighter.cd_topic_category;
+SELECT * FROM streetfighter.topic;
+SELECT * FROM streetfighter.forum;
+SELECT * FROM streetfighter.user_topic;
+------------------------------------
+SELECT *
+FROM
+	streetfighter.topic t, 
+    	streetfighter.cd_topic_category c,     
+    	streetfighter.forum f,
+   	streetfighter.user u
+WHERE
+	t.topic_category_id = c.topic_category_id AND
+   	f.poster_email = u.email AND
+    	t.topic_id = f.topic_id;
+----------------------------------
+SELECT 
+	u.email, u.username,u.first_name,u.last_name,u.pwds, 
+	t.topic_id, t.topic_title, t.dte_cr_topic,
+	c.topic_category_id, c.topic_category
+FROM
+	streetfighter.topic t, 
+    	streetfighter.cd_topic_category c,     
+	streetfighter.user_topic ut,
+   	streetfighter.user u
+WHERE	
+	u.email = ut.email AND	
+	t.topic_id = ut.topic_id AND
+	c.topic_category_id = t.topic_category_id;
+	
+
+
+	
+SELECT
+	u.email AS user_email, 
+	(SELECT count(topic_id) FROM streetfighter.user_topic WHERE email = u.email) AS numbers_of_topics,
+	(SELECT count(forum_id) FROM streetfighter.forum WHERE poster_email = u.email) AS numbers_of_posts
+FROM 
+	streetfighter.user u
+ORDER BY
+	email;
+	
+	
+SELECT 
+	poster_email, count(*) AS number_of_posts
+FROM 
+	streetfighter.forum
+WHERE	
+	dte_cr_post  BETWEEN '2022-10-01' AND '2022-12-31'
+GROUP BY
+	poster_email;

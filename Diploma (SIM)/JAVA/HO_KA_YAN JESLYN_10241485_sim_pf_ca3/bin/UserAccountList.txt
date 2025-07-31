@@ -1,0 +1,8 @@
+#First Line:	userId|userFirstName|userLastName|userCreateDate
+#Second Line:	P|Genre
+U|5001|Steven|Chia|01/02/2023
+P|5001|Horror
+P|5001|Thriller
+U|5002|Peter|Goh|02/02/2023
+P|5002|Historical
+P|5002|Fantasy

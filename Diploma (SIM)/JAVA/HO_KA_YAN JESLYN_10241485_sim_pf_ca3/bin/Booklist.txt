@@ -1,0 +1,11 @@
+#bookId|bookGenre|bookRentalPrice|bookName|bookDescription;
+1001|Mystery   |10.10|Devil in a Blue Dress                   |Veteran Ezekiel "Easy" Rawlins who, desperate in need of a job, becomes drawn into a search for a mysterious woman.
+1002|Mystery   |15.15|The Moonstone                           |The story was serialised in Charles Dickens’s magazine All the Year Round. Collins adapted The Moonstone for the stage in 1877.
+2001|Thriller  |20.20|The Silence of the Lambs                |Novels feature the cannibalistic serial killer Dr. Hannibal Lecter, this time pitted against FBI Special Agent Clarice Starling.
+2002|Thriller  |25.25|Red Dragon                              |Dr. Hannibal Lecter, a brilliant psychiatrist and cannibalistic serial killer whom Graham reluctantly turns to for advice and with whom he has a dark past.
+3001|Historical|30.30|Book of joshua                          |The story of Israel from the conquest of Canaan to the Babylonian exile.
+3002|Historical|35.35|Book of Genesis                         |The first book of the Hebrew Bible and the Christian Old Testament.
+4001|Horror    |50.50|The Midnight Library                    |A young woman named Nora Seed who is unhappy with her choices in life. She tries to kill herself but ends up in a library managed by her school librarian, Mrs. Elm.
+4002|Horror    |55.55|The Haunting of Hill House              |The Haunting of Hill House is a 1959 gothic horror novel by American author Shirley Jackson.
+5001|Fantasy   |60.60|Harry Potter and the Prisoner of Azkaban|Harry Potter  with friends Ronald Weasley and Hermione Granger investigates Sirius Black, an escaped prisoner from Azkaban, believed to be one of Lord Voldemort's old allies.
+5002|Fantasy   |65.65|Charlie and The Chocolate Factory       |The story features the adventures of young Charlie Bucket inside the chocolate factory of eccentric chocolatier Willy Wonka.
