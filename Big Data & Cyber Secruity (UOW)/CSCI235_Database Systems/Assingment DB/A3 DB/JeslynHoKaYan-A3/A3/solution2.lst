@@ -1,0 +1,318 @@
+MongoDB shell version v4.0.4
+connecting to: mongodb://127.0.0.1:4000/test
+Implicit session: session { "id" : UUID("15e01d04-edbf-42ba-88e9-0e5f817c70d4") }
+MongoDB server version: 4.0.4
+Solution for Assingnment3 Task 2
+============================
+Student number: 10241485
+Name: Ho Ka Yan Jeslyn
+Date: 15 May 2024
+============================
+
+
+Q1. List the customer’s name, address and the created shopping cart who purchased product P1003.
+{
+	"_id" : "C78263",
+	"customerName" : "Andrew Smith",
+	"customerAddress" : {
+		"street" : "18 Bukit Timah",
+		"building" : "Rose",
+		"postalCode" : "589616",
+		"country" : "Singapore"
+	},
+	"createdShoppingCart" : {
+		"cartId" : "cart003",
+		"dateCreated" : ISODate("2024-05-11T00:00:00Z"),
+		"dateClosed" : ISODate("2024-05-11T00:00:00Z"),
+		"containsProdList" : {
+			"prodListId" : 2,
+			"productId" : "P1003",
+			"quantity" : 1
+		}
+	}
+}
+
+========================================================================================================================================================================================================
+Q2. List the customer’s name, address, and the created shopping cart of the customer who created a shopping cart on 11 May 2024 (ISODate('2024-05-11T00:00:00Z')). Please do not show the customer's id.
+{
+	"customerName" : "Andrew Smith",
+	"customerAddress" : {
+		"street" : "18 Bukit Timah",
+		"building" : "Rose",
+		"postalCode" : "589616",
+		"country" : "Singapore"
+	},
+	"createdShoppingCart" : {
+		"cartId" : "cart003",
+		"dateCreated" : ISODate("2024-05-11T00:00:00Z"),
+		"dateClosed" : ISODate("2024-05-11T00:00:00Z"),
+		"containsProdList" : [
+			{
+				"prodListId" : 1,
+				"productId" : "P1002",
+				"quantity" : 2
+			},
+			{
+				"prodListId" : 2,
+				"productId" : "P1003",
+				"quantity" : 1
+			}
+		]
+	}
+}
+
+========================================================================================================================================================================================================
+Q3. Find the total number of shopping carts created by each customer. For each customer, list his/her email address and the total number of shopping cart created.
+{ "customerEmail" : "C78263@gmail.com", "totalCarts" : 2 }
+{ "customerEmail" : "C92378@gmail.com", "totalCarts" : 2 }
+
+========================================================================================================================================================================================================
+Q4. Find the products that have been included in at least 2 or 3 shopping carts.
+{ "_id" : "P1002", "count" : 3 }
+{ "_id" : "P1001", "count" : 3 }
+
+========================================================================================================================================================================================================
+Q5. For each price base, list the price base and the total number of each price base.
+{ "_id" : "Singapore", "total" : 2 }
+{ "_id" : "US", "total" : 1 }
+{ "_id" : "Australian", "total" : 1 }
+{ "_id" : null, "total" : 2 }
+
+========================================================================================================================================================================================================
+Q6. Find the customers who have purchased both the products 'P1002' and 'P1003'.
+{ "_id" : "C78263" }
+
+========================================================================================================================================================================================================
+Q7. Find the products that have not been included in any of the shopping carts.
+{ "productId" : "P1004" }
+
+========================================================================================================================================================================================================
+Q8. Find the total number of customers who do not provide his/her telephone number.
+1
+
+========================================================================================================================================================================================================
+Q9. Update the closing date (dateClosed) of the cart ‘cart001’ of the customer ‘C92378’ to 15 May 2024. (Hint. You can use the function new Date(“2024-05-15” to set the date.)
+==========================
+before updating the closing date
+{
+	"_id" : "C92378",
+	"CUSTOMER" : {
+		"customerId" : "C92378",
+		"customerName" : "Daniel Martin",
+		"customerAddress" : {
+			"street" : "718 Main Street",
+			"building" : "Idea Tower 1",
+			"postalCode" : "468419",
+			"country" : "Singapore"
+		},
+		"customerEmail" : "C92378@gmail.com",
+		"customerPhone" : "92378888",
+		"creates" : {
+			"SHOPPINGCART" : [
+				{
+					"cartId" : "cart001",
+					"dateCreated" : ISODate("2024-05-19T00:00:00Z"),
+					"dateClosed" : null,
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1002",
+							"quantity" : 2
+						},
+						{
+							"prodListId" : 2,
+							"productId" : "P1001",
+							"quantity" : 1
+						}
+					]
+				},
+				{
+					"cartId" : "cart002",
+					"dateCreated" : ISODate("2024-05-12T00:00:00Z"),
+					"dateClosed" : ISODate("2024-05-19T00:00:00Z"),
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1001",
+							"quantity" : 3
+						}
+					]
+				}
+			]
+		}
+	}
+}
+
+===========================
+Updating the closing date
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+===========================
+After updating the closing date
+{
+	"_id" : "C92378",
+	"CUSTOMER" : {
+		"customerId" : "C92378",
+		"customerName" : "Daniel Martin",
+		"customerAddress" : {
+			"street" : "718 Main Street",
+			"building" : "Idea Tower 1",
+			"postalCode" : "468419",
+			"country" : "Singapore"
+		},
+		"customerEmail" : "C92378@gmail.com",
+		"customerPhone" : "92378888",
+		"creates" : {
+			"SHOPPINGCART" : [
+				{
+					"cartId" : "cart001",
+					"dateCreated" : ISODate("2024-05-19T00:00:00Z"),
+					"dateClosed" : ISODate("2024-05-15T00:00:00Z"),
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1002",
+							"quantity" : 2
+						},
+						{
+							"prodListId" : 2,
+							"productId" : "P1001",
+							"quantity" : 1
+						}
+					]
+				},
+				{
+					"cartId" : "cart002",
+					"dateCreated" : ISODate("2024-05-12T00:00:00Z"),
+					"dateClosed" : ISODate("2024-05-19T00:00:00Z"),
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1001",
+							"quantity" : 3
+						}
+					]
+				}
+			]
+		}
+	}
+}
+
+
+========================================================================================================================================================================================================
+10. Delete from the collection a shoppingcart (cart005) created by the customer C78263.
+==========================
+before Deleting from the collection a shoppingcart
+{
+	"_id" : "C78263",
+	"CUSTOMER" : {
+		"customerId" : "C78263",
+		"customerName" : "Andrew Smith",
+		"customerAddress" : {
+			"street" : "18 Bukit Timah",
+			"building" : "Rose",
+			"postalCode" : "589616",
+			"country" : "Singapore"
+		},
+		"customerEmail" : "C78263@gmail.com",
+		"creates" : {
+			"SHOPPINGCART" : [
+				{
+					"cartId" : "cart003",
+					"dateCreated" : ISODate("2024-05-11T00:00:00Z"),
+					"dateClosed" : ISODate("2024-05-11T00:00:00Z"),
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1002",
+							"quantity" : 2
+						},
+						{
+							"prodListId" : 2,
+							"productId" : "P1003",
+							"quantity" : 1
+						}
+					]
+				},
+				{
+					"cartId" : "cart004",
+					"dateCreated" : ISODate("2024-05-14T00:00:00Z"),
+					"dateClosed" : null,
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1001",
+							"quantity" : 3
+						}
+					]
+				},
+				{
+					"cartId" : "cart005",
+					"dateCreated" : ISODate("2024-05-15T00:00:00Z"),
+					"dateClosed" : null,
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1002",
+							"quantity" : 1
+						}
+					]
+				}
+			]
+		}
+	}
+}
+==========================
+ Deleting from the collection a shoppingcart
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+==========================
+After Deleting from the collection a shoppingcart
+{
+	"_id" : "C78263",
+	"CUSTOMER" : {
+		"customerId" : "C78263",
+		"customerName" : "Andrew Smith",
+		"customerAddress" : {
+			"street" : "18 Bukit Timah",
+			"building" : "Rose",
+			"postalCode" : "589616",
+			"country" : "Singapore"
+		},
+		"customerEmail" : "C78263@gmail.com",
+		"creates" : {
+			"SHOPPINGCART" : [
+				{
+					"cartId" : "cart003",
+					"dateCreated" : ISODate("2024-05-11T00:00:00Z"),
+					"dateClosed" : ISODate("2024-05-11T00:00:00Z"),
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1002",
+							"quantity" : 2
+						},
+						{
+							"prodListId" : 2,
+							"productId" : "P1003",
+							"quantity" : 1
+						}
+					]
+				},
+				{
+					"cartId" : "cart004",
+					"dateCreated" : ISODate("2024-05-14T00:00:00Z"),
+					"dateClosed" : null,
+					"containsProdList" : [
+						{
+							"prodListId" : 1,
+							"productId" : "P1001",
+							"quantity" : 3
+						}
+					]
+				}
+			]
+		}
+	}
+}
+
+bye

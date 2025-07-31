@@ -1,0 +1,911 @@
+<!--
+
+<html>
+<head>
+    <title>ADEF</title>
+
+    <meta charset="utf-8">
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+    
+</head>
+
+
+
+
+
+<body>
+    <script>
+    function validateForm() {
+        // Get the Name input field and error span
+        var nameField = document.getElementById("name");
+        var inputError = document.getElementById("nameError");
+
+        // Check if the Name field is empty
+        if (nameField.value == null || nameField.value.trim() == "") {
+            inputError.innerHTML = "Name must be filled out";
+            return false; // Prevent form submission
+        } else {
+            inputError.innerHTML = "";  // Clear the error message
+            if (!validateName(nameField.value)) { //Only accept letters and special characters
+                inputError.innerHTML = "Name can only contain letters and special characters";
+                return false;// Prevent form submission
+            }
+        }
+
+            //Special character (e.g. #!@*()^&% is allowed).
+            function validateName(name) {
+                var regex = /^[A-Za-z\s\-.,'#!@*()^&%]+$/; //Notes: [A-Za-z]= upper and Lower case, \s=whitesapce, \-, -,=hyphen, period, comma, and single quote characters
+                return regex.test(name);
+            }
+//======================================================================================
+
+        // Get the Module code input field and error span
+        var moduleIDField = document.getElementById("moduleID");
+        var moduleIDError = document.getElementById("moduleIDError");
+
+
+        if (moduleIDField.value == null||moduleIDField.value.trim() !== "") {
+            
+            var pattern = /^(0|1|2|3|4|5){3}[A-Za-z]{3}$/
+        // var pattern = /^[0-5]{3}[A-Za-z]{3}$/ (both can use)
+            //var pattern = /^(0|1|2|3|4|5){3}\s{3}$/;  (both can use)
+            if (!pattern.test(moduleIDField.value)) {
+                moduleIDError.innerHTML = "Invalid module code. It should be exactly 3 digits between 0 and 5 followed by exactly 3 spaces.";
+                return false; // Prevent form submission
+            }else {
+                    moduleIDError.innerHTML = ""; // Clear the error message
+            }
+
+        }
+
+
+
+
+
+ //==========================================================================================           
+           // Get the Textbox input field and error span
+           const userInput = document.getElementById('userInput');
+        const findInput = document.getElementById('find');
+        const replaceInput = document.getElementById('replace');
+        const textBoxError = document.getElementById('textBoxError');
+
+   
+            // Check if the userInput field is empty
+            if (userInput.value == null || userInput.value.trim() === "") {
+                textBoxError.innerHTML = "Textbox must be filled out";
+                return false; // Prevent form submission
+            } else {
+                textBoxError.innerHTML = ""; // Clear the error message
+            }
+        
+
+        function findAndReplace() {
+            const text = userInput.value;
+            const findText = findInput.value;
+            const replaceText = replaceInput.value;
+            const newText = text.split(findText).join(replaceText);
+            userInput.value = newText;
+
+        }
+
+        // Clear the form fields after successful submission. User can reenter again.
+            nameField.value = "";
+            textBoxField.value = "";
+            moduleIDField.value = "";
+
+            return false;// Prevent form submission
+        
+    }
+
+
+    </script>
+
+    <form name="myForm" action="myService" method="get" onSubmit="return validateForm()">
+        Name*:<input type="text" id="name" name="name" placeholder="" />
+        <span class="error" id="nameError"></span>
+        <br>
+        Module code::<input type="text" id="moduleID" name="moduleID" oninput="validateModuleCode(this.value);"/>
+        <span class="error" id="moduleIDError"></span>
+        <br>
+
+        <textarea id="userInput" rows="5" cols="40" placeholder="Enter text..."></textarea><br>
+        <span class="error" id="textBoxError"></span>
+    
+        <label for="find">Find:</label>
+        <input type="text" id="find" placeholder="Text to find">
+        <label for="replace">Replace:</label>
+        <input type text="text" id="replace" placeholder="Replacement text">
+        <button onclick="findAndReplace()">Find and Replace</button>
+        <input type="submit" value="Submit">
+    </form> 
+   
+</body>
+</html>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Translator</title>
+</head>
+<body>
+    <h1>Simple Translator</h1>
+    <textarea id="inputText" rows="5" cols="40" placeholder="Enter text to translate"></textarea>
+    <button id="translateButton">Translate</button>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const translateButton = document.getElementById('translateButton');
+
+        translateButton.addEventListener('click', () => {
+            const textToTranslate = inputText.value;
+            const targetLanguage = 'fr'; // Change to the desired target language code (e.g., 'fr' for French).
+
+            // Use Google Translate URL to translate the text
+            fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLanguage}&dt=t&q=${textToTranslate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const translated = data[0][0][0];
+                    inputText.value = translated; // Update the inputText value with the translation
+                })
+                .catch(error => {
+                    console.error('Translation error:', error);
+                });
+        });
+    </script>
+</body>
+</html>
+-->
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Language Translator</title>
+</head>
+<body>
+    <h1>Language Translator</h1>
+    
+    <input type="radio" name="sourceLanguage" value="auto" checked> Auto Detect
+    <input type="radio" name="sourceLanguage" value="en"> English
+    <input type="radio" name="sourceLanguage" value="fr"> French
+  
+
+    <select id="targetLanguage">
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+
+    </select>
+
+    <textarea id="inputText" rows="5" cols="40" placeholder="Enter text to translate"></textarea>
+    <button id="translateButton">Translate</button>
+
+
+    <script>
+        const sourceLanguageRadio = document.querySelectorAll('input[name="sourceLanguage"]');
+        const targetLanguageSelect = document.getElementById('targetLanguage');
+        const inputText = document.getElementById('inputText');
+        const translatedText = document.getElementById('translatedText');
+        const translateButton = document.getElementById('translateButton');
+
+        translateButton.addEventListener('click', translate);
+
+        function translate() {
+        const sourceLanguage = [...sourceLanguageRadio].find(radio => radio.checked).value;
+        const targetLanguage = targetLanguageSelect.value;
+        const textToTranslate = inputText.value;
+
+
+        //making HTTP requests in JavaScript when you want to retrieve data from a remote server
+        fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&dt=t&q=${textToTranslate}`)
+            .then(response => response.json())
+            .then(data => {
+                const translated = data[0][0][0];
+                inputText.value = translated; // Update the inputText value with the translation
+            })
+            .catch(error => {
+                console.error('Translation error:', error);
+            });
+    }
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Language Translator</title>
+</head>
+<body>
+    <h1>Language Translator</h1>
+    
+    <input type="radio" name="sourceLanguage" value="auto" checked> Auto Detect
+    <input type="radio" name="sourceLanguage" value="en"> English
+    <input type="radio" name="sourceLanguage" value="fr"> French
+  
+
+    <select id="targetLanguage">
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+
+    </select>
+
+    <textarea id="inputText" rows="5" cols="40" placeholder="Enter text to translate"></textarea>
+    <button id="translateButton">Translate</button>
+    <div id="translatedText"></div>
+
+    <script>
+        const sourceLanguageRadio = document.querySelectorAll('input[name="sourceLanguage"]');
+        const targetLanguageSelect = document.getElementById('targetLanguage');
+        const inputText = document.getElementById('inputText');
+        const translatedText = document.getElementById('translatedText');
+        const translateButton = document.getElementById('translateButton');
+
+        translateButton.addEventListener('click', translate);
+
+        function translate() {
+            const sourceLanguage = [...sourceLanguageRadio].find(radio => radio.checked).value;
+            const targetLanguage = targetLanguageSelect.value;
+            const textToTranslate = inputText.value;
+
+            fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguage}&tl=${targetLanguage}&dt=t&q=${textToTranslate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const translated = data[0][0][0];
+                    translatedText.textContent = translated;
+                })
+                .catch(error => {
+                    console.error('Translation error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback Form</title>
+    <meta charset="utf-8">
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="section">
+    <form name="feedbackForm" action="submit_feedback" method="get" onSubmit="return validateForm()">
+        <label for="name">Name*:</label>
+        <input type="text" id="name" name="name" placeholder="" />
+        <span class="error" id="nameError"></span>
+        <br>
+
+        <label for="moduleID">Module code:</label>
+        <input type="text" id="moduleID" name="moduleID" />
+        <span class="error" id="moduleIDError"></span>
+        <br>
+
+        <textarea id="userInput" rows="5" cols="40" placeholder="Enter feedback..."></textarea>
+        <span class="error" id="textBoxError"></span>
+        <br>
+
+        <label for="find">Find:</label>
+        <input type="text" id="find" placeholder="Text to find">
+
+        <label for="replace">Replace:</label>
+        <input type="text" id="replace" placeholder="Replacement text">
+        <br>
+
+        <button type="button" onclick="findAndReplace()">Find and Replace</button>
+
+
+        
+        <button type="submit">Submit Feedback</button>
+    </form>
+</div>
+
+<script>
+
+
+    function validateForm() {
+        var nameField = document.getElementById("name");
+        var inputError = document.getElementById("nameError");
+        var nameValue = nameField.value.trim();
+
+        // Check if the Name field is empty
+        if (nameValue === "") {
+            inputError.innerHTML = "Name must be filled out";
+            return false; // Prevent form submission
+        } else {
+            inputError.innerHTML = "";  // Clear the error message
+        }
+
+        // Special character (e.g. #!@*()^&%) is allowed.
+        function validateName(name) {
+            var regex = /^[A-Za-z\s\-.,'#!@*()^&%]+/;
+            return regex.test(name);
+        }
+
+        if (!validateName(nameValue)) {
+            inputError.innerHTML = "Name can only contain letters and special characters";
+            return false;
+        }
+
+
+        //=======MODULE ID=======================================
+        var moduleIDField = document.getElementById("moduleID");
+        var moduleIDError = document.getElementById("moduleIDError");
+        var moduleIDValue = moduleIDField.value.trim();
+
+        if (moduleIDValue !== "") {
+            var pattern = /^(0|1|2|3|4|5){3}[A-Za-z]{3}$/;
+
+            if (!pattern.test(moduleIDValue)) {
+                moduleIDError.innerHTML = "Invalid module code. It should be exactly 3 digits between 0 and 5 followed by exactly 3 characters.";
+                return false;
+            } else {
+                moduleIDError.innerHTML = ""; // Clear the error message
+            }
+        }
+
+
+
+//===========TEXTAREA BOX======================================================
+        var userInput = document.getElementById('userInput');
+        var textBoxError = document.getElementById('textBoxError');
+        var userInputValue = userInput.value.trim();
+        textBoxError.innerHTML = ''; // Clear any previous error message
+
+        if (userInputValue === "") {
+            textBoxError.innerHTML = "Textbox must be filled out";
+            return false;
+        }
+
+        
+
+        // Clear the form fields after successful submission. User can re-enter again.
+        nameField.value = "";
+        moduleIDField.value = "";
+        userInput.value = "";
+
+        return false; // Allow form submission if validation succeeds
+    }
+
+
+
+
+        // Function to perform find and replace in the text area
+    function findAndReplace() {
+        const textArea = document.getElementById('userInput');
+        const findText = document.getElementById('find').value;
+        const replaceText = document.getElementById('replace').value;
+        const newText = textArea.value.split(findText).join(replaceText);
+        textArea.value = newText;
+    }
+</script>
+
+</body>
+</html>
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment 1</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nanum Gothic', sans-serif;
+            color: #000000;
+            font-size: 15px;
+            background:linear-gradient(to bottom right,#594F4F, #c9b6b6);
+        }
+
+        img {
+            border-radius: 20%;
+        }
+
+/*===============================================================================*/
+
+
+        #table1{
+            border:1px solid #000000;
+            margin-left:auto;
+            margin-right:auto;
+        }
+
+        #table1 th{
+            background-color: #9DE0AD;
+        }
+
+        #table1 td{
+            background-color: #E5FCC2;
+        }
+        
+        #Part1 {
+            border-radius: 50px;
+            padding: 10px; 
+            margin: 20px 150px 0px 150px;
+            background-color: #547980;
+            opacity: 0.7;
+        }
+
+/*===============================================================================*/
+
+        #Part2 {
+                border-radius: 50px;
+                padding: 10px; 
+                margin: 20px 150px 0px 150px;
+                background-color: #547980;
+                opacity: 0.7;
+        }
+
+        #hyperlink{
+
+            border-radius: 50px;
+            padding: 10px; 
+            background-color: #83acb4;
+            opacity: 0.7;
+            width: 720px;
+            margin: 0 auto;
+        }
+
+        #Cplus, #C, #Python,#HTML{
+            border-radius: 50px;
+            padding: 10px;
+            background-color: #ccd4d7;
+            opacity: 1;
+            width: 720px;
+            margin: 0 auto;
+        }
+/*===============================================================================*/
+
+        #Part3 {
+            border-radius: 50px;
+            padding: 10px; 
+            margin: 20px 150px 0px 150px;
+            background-color: #547980;
+            opacity: 0.7;
+        }
+
+
+
+
+    </style>
+
+</head>
+
+< =========================================================================================== 
+
+<body>
+    <div id="wrapper">
+        <div id="Part1">
+            <table id="table1" width="50%">
+                <center><h1>Part 1</h1></center>
+                <tr>
+                    <th colspan="3">CSIT128: Assignment 1</th>
+                    <th>Group TxxGyy</th>
+                </tr>
+
+                <tr>
+                    <th rowspan="2">Student Number / Name / Email</th>
+                    <td>8550864</td>
+                    <td>DaraYuth</td>
+                    <td>ecrwe@uowmail.edu.au</td>
+                </tr>
+
+                <tr>
+                    <td>8535383</td>
+                    <td>Jeslyn</td>
+                    <td>kyjh095@uowmail.edu.au</td>
+                </tr>
+
+            </table>
+
+        </div>
+<-- =========================================================================================== -
+        <div id="Part2">
+            <center><h1>Part 2: </h1></center>
+            <center><h1>Hello World program with difference languages</h1></center>
+            <div id="hyperlink">
+                <ul>
+                    <li><a href="#Cplus">C++</a></li>
+                    <li><a href="#C">C#</a></li>
+                    <li><a href="#Python">python</a></li>
+                    <li><a href="#HTML">HTML</a></li>
+                </ul>
+            </div>
+
+            <br/>
+
+
+            <table id="Cplus">
+                <tr style="font-size: 20px;">
+                    <th align="left";colspan="2">C++</th>
+                </tr>
+                <tr>
+                    <td style="height: auto;"><img src="c++Logo.jpeg" alt="C++ logo" width="160px" height="160px" align="left"></td>
+                    <td style="height: 50%;">
+                        <blockquote>
+                            <code>#include <iostream></code>
+                            <code>void main( ) { </code>
+                            <blockquote><code> count<< "Hello World!" << endl; </code></blockquote>
+                            <code>}</code>
+                        </blockquote>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+    
+
+            <table id="C">
+                <tr style="font-size: 20px;">
+                    <th align="left">C#</th>
+                </tr>
+                <tr>
+                    <td style="height: auto;"><img src="cLogo.jpeg" alt="C# logo" width="160px" height="160px" align="left"></td>
+                    <td style="height: auto;">
+                        <blockquote>
+                            <code>using System;</code>
+                            <code>class Program</code>
+                            {
+                            <blockquote> 
+                                <code>static void Main() </code>
+                                {
+                            </blockquote>
+                                <blockquote>
+                                    <code>Console.WriteLine("Hello, World!"); </code>
+                                }
+                                </blockquote>
+                            }
+                        </blockquote>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+
+            
+            <table id="Python">
+                <tr style="font-size: 20px; text-align:end;">
+                    <th align="left">Python</th>
+                </tr>
+                <tr>
+                    <td style="height: auto;"><img src="pythonLogo.jpeg" alt="C# logo" width="160px" height="160px" align="left"></td>
+                    <td style="height: auto;">
+                        <blockquote>
+                            <code># Hello World program in Python<br/>
+                            print("Hello World!")</code>
+                        </blockquote>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            
+            
+            <table id="HTML">
+                <tr style="font-size: 20px;">
+                    <th align="left">HTML</th>
+                </tr>
+                <tr>
+                    <td style="height: auto;"><img src="htmlLogo.jpeg" alt="C# logo" width="160px" height="160px" align="left"></td>
+                    <td style="height: auto;">
+                        <blockquote><code>
+                            &lt;html&gt;<br/>
+                            &lt;head&gt;<br/>
+                            &lt;title&gt;Hello&lt;/title&gt;<br/>
+                            &lt;/head&gt;<br/>
+                            &lt;body&gt;<br/>
+                            Hello World!<br/>
+                            &lt;/body&gt;<br/>
+                            &lt;/html&gt;<br/>
+                        </code></blockquote>
+                    </td>
+                </tr>
+            </table>
+
+        </p><br/>
+
+
+        </div>
+
+<- =========================================================================================== -
+
+        <div id="Part3">
+
+
+            <p>
+                <center><h1>Part 3: University policies and services</h1></center>
+                <dl>
+                    <dt><b>PLAGIARISM</b></dt>
+                    <dd style="font-size: 18px;">Plagiarism is treated seriously. If we suspect any work is copied, all students involved are likely to receive zero for the entire assignment. Plagiarism has led to students being expelled from the University.</dd>
+                    <dd>Please click <a href="https://www.uow.edu.au/student/support-services/learning-development/plagiarism/" target="_blank">here</a> to read more about Plagiarism.</dd>
+                    <br/>
+    
+                    <dt><b>ACADEMIC CONSIDERATION</b></dt>
+                    <dd style="font-size: 18px;">We know that life isn't perfect and there may be a time when you can't hand in an assignment on time, or make it to class or an exam. If you find yourself in a situation like this, you may be eligible for Academic Consideration. Academic Consideration is designed to help students when they are sick, injured or where a serious, unplanned situation has occurred that has affected their ability to study.</dd>
+                    <dd>Please click <a href="https://www.uow.edu.au/student/admin/academic-consideration/portal/" target="_blank">here</a> to read more about Academic Consideration.</dd>
+                    <br/>
+    
+                    <dt><b>STUDENT SUPPORT ADVISERS</b></dt>
+                    <dd style="font-size: 18px;">If you have an issue or a problem that is affect your study, then the Student Support Advisers may be able to help. There are Student Support Adivers available to assit students who are studying at all UOW Campuses and in all UOW Faculties.</dd>
+                    <dd>Please click <a href="https://www.uow.edu.au/student/support-services/advisers/" target="_blank">here</a> to read more about Student Support Advisers.</dd>
+                    <br/>
+                    <dd>Student Support Adversers contact details for Faculty of Engineering and Information Sciences:
+                        <table style="border: 1px solid; text-align:left">
+                            <tr>
+                                <th>Ann-Maree Smith</th>
+                                <th>Mitz Perez</th>
+                            </tr>
+                            <tr>
+                                <td>Bld 56:29, Wollongong Campus</td>
+                                <td>Bld 102:64, Wollongong Campus</td>
+                            </tr>
+                            <tr>
+                                <td>(02) 4224 4714</td>
+                                <td>(02) 4224 3883</td>
+                            </tr>
+                            <tr>
+                                <td>Mon-Fri</td>
+                                <td>Mon-Fri</td>
+                            </tr>
+                            <tr>
+                                <td>ams@uow.edu.au</td>
+                                <td>mprez@uow.edu.au</td>
+                            </tr>
+                
+                        </table>
+                    </dd><br/>
+    
+                    <dt><b>DISABILITY SERVICE</b></dt>
+                    <dd style="font-size: 18px;">Disability Services provide advice and support for students with a disability or health condition. Our aimm is to ensure students with a disability realise their full academic potential. We also provide support for those who are the primary cares for those with a medical condition or disability.</dd>
+                    <dd>Please click <a href="https://www.uow.edu.au/student/support-services/disability/
+                        Part">here</a> to read more about Disability Services.</dd>
+                </dl><br/>
+            </p>
+
+
+<- =========================================================================================== -
+
+            <div id="Part4">
+            
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+-->

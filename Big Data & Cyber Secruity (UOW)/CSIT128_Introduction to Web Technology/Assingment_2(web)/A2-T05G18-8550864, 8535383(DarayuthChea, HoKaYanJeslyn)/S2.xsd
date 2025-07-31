@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="forecast">
+    <xsd:complexType>
+      <xsd:sequence>
+      <!-- Provide a series of weather data that can occur in (unbounded), that can ignore (minOccurs="0") -->
+        <xsd:element name="weather" maxOccurs="unbounded" minOccurs="0">
+          <xsd:complexType>
+            <xsd:sequence> <!-- For every weather data point, it will define child elements -->
+              <xsd:element name="year" type="xsd:int" />
+              <xsd:element name="month" type="xsd:int"/>
+              <xsd:element name="date" type="xsd:int"/>
+              <xsd:element name="dayOfWeek" type="xsd:string"/>
+              <xsd:element name="overall" type="xsd:string"/>
+              <xsd:element name="overallCode" type="xsd:string"/>
+              <xsd:element name="highest" type="xsd:int"/>
+              <xsd:element name="lowest" type="xsd:int"/>
+            </xsd:sequence>
+            <!-- For every "weather" element, define an optional property of type integer called "yyyymmdd" -->
+            <xsd:attribute  name="yyyymmdd" type="xsd:int" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+            <!-- Provide attributes for the "forecast" element -->
+      <xsd:attribute name="queryTime" type="xsd:string"/>
+      <xsd:attribute  name="queryLocation" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>

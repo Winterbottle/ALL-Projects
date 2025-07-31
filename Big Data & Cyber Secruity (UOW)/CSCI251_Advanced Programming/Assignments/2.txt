@@ -1,0 +1,922 @@
+// Name: JESLYN HO KA YAN
+// UOW ID: 8535383
+// Module: CSCI251 Advanced Programming
+// Assingment 1
+
+
+#include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <numeric>  // Added for accumulate function
+
+using namespace std;
+
+// Structure to hold city information
+struct City {
+    int x;
+    int y;
+    int city_id;
+    string city_name;
+};
+
+// Function prototypes
+void displayMainMenu();
+
+// 1. Add splitString function first
+vector<string> splitString(const string& str, const string& delim);
+
+
+bool readCityLocations(const string& filename, vector<City>& cities);
+void displayCityMap(int gridXRange, int gridYRange, const vector<City>& cities);
+bool readCloudCoverage(const string& filename, vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange);
+void displayCloudCoverageIndex(const vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange);
+
+void displayCloudCoverageLMH(const vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange);
+bool readConfigFile(const string& filename, int& gridXRange, int& gridYRange, string& cityFile, string& cloudFile, string& pressureFile);
+void displayWeatherForecastSummary(const vector<vector<int>>& cloudCoverage, const vector<vector<int>>& pressureData, const vector<City>& cities, int gridXRange, int gridYRange);
+pair<double, char> calculateACC(const vector<vector<int>>& cloudCoverage, const vector<City>& cities, int cityID, int gridXRange, int gridYRange);
+pair<double, char> calculateAP(const vector<vector<int>>& pressureData, const vector<City>& cities, int cityID, int gridXRange, int gridYRange);
+
+
+
+
+
+// Function to display the main menu
+void displayMainMenu() {
+    cout << "\nStudent ID   : 8535383\n";
+    cout << "Student Name : Jeslyn Ho Ka Yan\n";
+    cout << "-----------------------------------------------\n";
+    cout << "Welcome to Weather Information Processing System!\n";
+    cout << "\n";
+    cout << "1) Read in and process a configuration file\n";
+    cout << "2) Display city map\n";
+    cout << "3) Display cloud coverage map (cloudiness index)\n";
+    cout << "4) Display cloud coverage map (LMH symbols)\n";
+    cout << "5) Display atmospheric pressure map (pressure index)\n";
+    cout << "6) Display atmospheric pressure map (LMH symbols)\n";
+    cout << "7) Show weather forecast summary report\n";
+    cout << "8) Quit\n";
+    cout << "\n";
+}
+
+
+// Function to read the configuration file
+bool readConfigFile(const string& filename, int& gridXRange, int& gridYRange, string& cityFile, string& cloudFile, string& pressureFile) {
+    ifstream configFile(filename);
+    if (!configFile.is_open()) {
+        cerr << "Error: Unable to open configuration file." << endl;
+        return false;
+    }
+
+    cout << "\n[ Read in and process a configuration file ]\n" << endl;
+    
+    string line;
+    int fileCount = 0;
+    while (getline(configFile, line)) {
+        if (line.find("GridX_IdxRange") != string::npos) {
+            string range = line.substr(line.find("=") + 1);
+            size_t dashPos = range.find("-");
+            int lowerBound = stoi(range.substr(0, dashPos));
+            int upperBound = stoi(range.substr(dashPos + 1));
+            gridXRange = upperBound;
+            cout << "Reading in GridX_IdxRange: 0-" << gridXRange << " ... done!" << endl;
+        } else if (line.find("GridY_IdxRange") != string::npos) {
+            string range = line.substr(line.find("=") + 1);
+            size_t dashPos = range.find("-");
+            int lowerBound = stoi(range.substr(0, dashPos));
+            int upperBound = stoi(range.substr(dashPos + 1));
+            gridYRange = upperBound;
+            cout << "Reading in GridY_IdxRange: 0-" << gridYRange << " ... done!" << endl;
+        } else if (line.find(".txt") != string::npos) {
+            line.erase(0, line.find_first_not_of(" \t"));  // Trim leading spaces/tabs
+            line.erase(line.find_last_not_of(" \t") + 1);  // Trim trailing spaces/tabs
+            fileCount++;
+
+            if (fileCount == 1) {
+                cityFile = line;
+                cout << "City file: " << cityFile << " ... done!" << endl;
+            } else if (fileCount == 2) {
+                cloudFile = line;
+                cout << "Cloud file: " << cloudFile << " ... done!" << endl;
+            } else if (fileCount == 3) {
+                pressureFile = line;
+                cout << "Pressure file: " << pressureFile << " ... done!" << endl;
+            }
+        }
+    }
+
+    cout << "\nAll records successfully stored. Going back to main menu...\n" << endl;
+    return true;
+}
+
+// Function to display the city map
+void displayCityMap(int gridXRange, int gridYRange, const vector<City>& cities) {
+    vector<vector<char>> map(gridYRange + 1, vector<char>(gridXRange + 1, ' '));
+
+    for (const auto& city : cities) {
+        if (city.x >= 0 && city.x <= gridXRange && city.y >= 0 && city.y <= gridYRange) {
+            map[city.y][city.x] = city.city_id + '0';
+        }
+    }
+
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    for (int y = gridYRange; y >= 0; --y) {
+        cout << setw(2) << y << "#";
+        for (int x = 0; x <= gridXRange; ++x) {
+            cout << " " << map[y][x] << " ";
+        }
+        cout << "#" << endl;
+    }
+
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    cout << "  ";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << setw(3) << x;
+    }
+    cout << endl;
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+
+
+
+
+
+
+void displayCloudCoverageIndex(const vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange) {
+    cout << "\nCloud Coverage Map (Cloudiness Index):\n";
+
+    // Print top boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print grid rows with boundaries and cloudiness index values
+    for (int y = gridYRange; y >= 0; --y) {
+        cout << setw(2) << y << "#";  // Row index with left boundary
+        for (int x = 0; x <= gridXRange; ++x) {
+            int value = cloudCoverage[y][x];
+            int index = value / 10;  // Calculate cloudiness index (0-9)
+            cout << " " << index << " ";
+        }
+        cout << "#" << endl;  // Right boundary
+    }
+
+    // Print bottom boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print column indices
+    cout << "  ";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << setw(3) << x;
+    }
+    cout << endl;
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+
+// Function to read cloud coverage data
+bool readCloudCoverage(const string& filename, vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange) {
+    cloudCoverage.resize(gridYRange + 1, vector<int>(gridXRange + 1, 0));
+
+    ifstream cloudFile(filename);
+    if (!cloudFile.is_open()) {
+        return false;
+    }
+
+    string line;
+    while (getline(cloudFile, line)) {
+        // Trim spaces from the line
+        line.erase(remove_if(line.begin(), line.end(), ::isspace), line.end());
+
+        // Skip empty or whitespace-only lines
+        if (line.empty()) {
+            continue;
+        }
+
+        // Split the line using '-' as a delimiter
+        vector<string> parts = splitString(line, "-");
+        if (parts.size() != 2) {
+            cerr << "Error: Invalid format in cloud coverage file. Skipping line: " << line << endl;
+            continue;
+        }
+
+        // Remove brackets from the coordinates part
+        string coordPart = parts[0];
+        coordPart.erase(remove(coordPart.begin(), coordPart.end(), '['), coordPart.end());
+        coordPart.erase(remove(coordPart.begin(), coordPart.end(), ']'), coordPart.end());
+
+        // Split coordinates by ','
+        vector<string> coords = splitString(coordPart, ",");
+        if (coords.size() != 2) {
+            cerr << "Error: Invalid coordinates in cloud coverage file. Skipping line: " << line << endl;
+            continue;
+        }
+
+        try {
+            int x = stoi(coords[0]);
+            int y = stoi(coords[1]);
+            int coverage = stoi(parts[1]);
+
+            // Validate coordinates before storing the data
+            if (x >= 0 && x <= gridXRange && y >= 0 && y <= gridYRange) {
+                cloudCoverage[y][x] = coverage;
+            } else {
+                cerr << "Warning: Coordinates out of range (" << x << ", " << y << "). Skipping line: " << line << endl;
+            }
+        } catch (const invalid_argument& e) {
+            cerr << "Error: Non-numeric data found in line. Skipping line: " << line << endl;
+        } catch (const out_of_range& e) {
+            cerr << "Error: Numeric value out of range in line. Skipping line: " << line << endl;
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+// Function to split a string by a specified delimiter
+vector<string> splitString(const string& str, const string& delim) {
+    vector<string> result;
+    size_t start = 0, end;
+    while ((end = str.find(delim, start)) != string::npos) {
+        result.push_back(str.substr(start, end - start));
+        start = end + delim.length();
+    }
+    result.push_back(str.substr(start));
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to read city locations
+bool readCityLocations(const string& filename, vector<City>& cities) {
+    ifstream cityFile(filename);
+    if (!cityFile.is_open()) {
+        cerr << "Error: Unable to open city location file: " << filename << endl;
+        return false;
+    }
+
+    string line;
+    while (getline(cityFile, line)) {
+        line.erase(remove_if(line.begin(), line.end(), ::isspace), line.end());
+        if (line.empty()) {
+            continue;
+        }
+
+        vector<string> parts = splitString(line, "-");
+        if (parts.size() != 3) {
+            cerr << "Error: Invalid format in city location file. Line: " << line << endl;
+            return false;
+        }
+
+        string coordPart = parts[0];
+        coordPart.erase(remove(coordPart.begin(), coordPart.end(), '['), coordPart.end());
+        coordPart.erase(remove(coordPart.begin(), coordPart.end(), ']'), coordPart.end());
+
+        vector<string> coords = splitString(coordPart, ",");
+        if (coords.size() != 2) {
+            cerr << "Error: Invalid coordinates in city location file. Line: " << line << endl;
+            return false;
+        }
+
+        int x = stoi(coords[0]);
+        int y = stoi(coords[1]);
+        int city_id = stoi(parts[1]);
+        string city_name = parts[2];
+
+        cities.push_back({x, y, city_id, city_name});
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+pair<double, char> calculateACC(const vector<vector<int>>& cloudCoverage, const vector<City>& cities, int cityID, int gridXRange, int gridYRange) {
+    int minX = gridXRange, minY = gridYRange, maxX = 0, maxY = 0;
+
+    // Find the bounding box for the city with the given ID
+    for (const auto& city : cities) {
+        if (city.city_id == cityID) {
+            minX = min(minX, city.x);
+            minY = min(minY, city.y);
+            maxX = max(maxX, city.x);
+            maxY = max(maxY, city.y);
+        }
+    }
+
+    // Expand the bounding box by 1 unit in each direction (for perimeter)
+    minX = max(0, minX - 1);
+    minY = max(0, minY - 1);
+    maxX = min(gridXRange, maxX + 1);
+    maxY = min(gridYRange, maxY + 1);
+
+    // Collect cloud coverage values within the bounding box
+    vector<int> values;
+    for (int y = minY; y <= maxY; ++y) {
+        for (int x = minX; x <= maxX; ++x) {
+            values.push_back(cloudCoverage[y][x]);
+        }
+    }
+
+    // Calculate average cloud cover
+    double sum = accumulate(values.begin(), values.end(), 0);
+    double avg = sum / values.size();
+    char symbol = (avg < 35) ? 'L' : (avg < 65) ? 'M' : 'H' ;
+
+    return {avg, symbol};
+}
+
+
+// Function to determine probability of rain and ASCII graphics
+pair<int, string> determineRainProbability(char accSymbol, char apSymbol) {
+    int probability = 0;
+    string asciiArt;
+
+    if (apSymbol == 'L' && accSymbol == 'H') {
+        probability = 90;
+        asciiArt = "~~~~\n~~~~~\n\\\\\\\\\\";
+    } else if (apSymbol == 'L' && accSymbol == 'M') {
+        probability = 80;
+        asciiArt = "~~~~\n~~~~~\n \\\\\\\\";
+    } else if (apSymbol == 'L' && accSymbol == 'L') {
+        probability = 70;
+        asciiArt = "~~~~\n~~~~~\n  \\\\\\";
+    } else if (apSymbol == 'M' && accSymbol == 'H') {
+        probability = 60;
+        asciiArt = "~~~~\n~~~~~\n   \\\\";
+    } else if (apSymbol == 'M' && accSymbol == 'M') {
+        probability = 50;
+        asciiArt = "~~~~\n~~~~~\n    \\";
+    } else if (apSymbol == 'M' && accSymbol == 'L') {
+        probability = 40;
+        asciiArt = "~~~\n~~~~";
+    } else if (apSymbol == 'H' && accSymbol == 'H') {
+        probability = 30;
+        asciiArt = "~~~\n~~~";
+    } else if (apSymbol == 'H' && accSymbol == 'M') {
+        probability = 20;
+        asciiArt = "~~\n~~~";
+    } else if (apSymbol == 'H' && accSymbol == 'L') {
+        probability = 10;
+        asciiArt = "~\n~~";
+    }
+
+    return {probability, asciiArt};
+}
+
+
+// Function to display cloud coverage map (LMH symbols)
+void displayCloudCoverageLMH(const vector<vector<int>>& cloudCoverage, int gridXRange, int gridYRange) {
+    cout << "\nCloud Coverage Map (LMH Symbols):\n";
+
+    // Print top boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print grid rows with boundaries and LMH symbols
+    for (int y = gridYRange; y >= 0; --y) {
+        cout << setw(2) << y << "#";  // Row index with left boundary
+        for (int x = 0; x <= gridXRange; ++x) {
+            int value = cloudCoverage[y][x];
+            char symbol = (value < 35) ? 'L' : (value < 65) ? 'M' : 'H';  // Determine LMH symbol
+            cout << " " << symbol << " ";
+        }
+        cout << "#" << endl;  // Right boundary
+    }
+
+    // Print bottom boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print column indices
+    cout << "  ";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << setw(3) << x;
+    }
+    cout << endl;
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+// Function to display atmospheric pressure map (pressure index)
+void displayPressureIndex(const vector<vector<int>>& pressureData, int gridXRange, int gridYRange) {
+    cout << "\nAtmospheric Pressure Map (Pressure Index):\n";
+
+    // Print top boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print grid rows with boundaries and pressure index values
+    for (int y = gridYRange; y >= 0; --y) {
+        cout << setw(2) << y << "#";  // Row index with left boundary
+        for (int x = 0; x <= gridXRange; ++x) {
+            int value = pressureData[y][x];
+            int index = (value >= 0 && value < 100) ? value / 10 : 9;  // Ensure index is within range 0-9
+            cout << " " << index << " ";
+        }
+        cout << "#" << endl;  // Right boundary
+    }
+
+    // Print bottom boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print column indices
+    cout << "  ";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << setw(3) << x;
+    }
+    cout << endl;
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+
+// Function to calculate city average
+double calculateCityAverage(string** city, int** gridNum, int column, int row, string output) {
+    double total = 0;
+    double counter = 0;
+    for (int x = 0; x < row; x++) {
+        for (int y = 0; y < column; y++) {
+            if (city[x][y] == output) {
+                total += gridNum[x][y];
+                counter++;
+
+                bool right = false;
+                bool left = false;
+                bool up = false;
+                bool bottom = false;
+
+                if (x - 1 > -1 && city[x - 1][y] != output) {
+                    bottom = true;
+                }
+                if (x + 1 < row && city[x + 1][y] != output) {
+                    up = true;
+                }
+                if (y - 1 > -1 && city[x][y - 1] != output) {
+                    left = true;
+                }
+                if (y + 1 < column && city[x][y + 1] != output) {
+                    right = true;
+                }
+
+                if (bottom) {
+                    total += gridNum[x - 1][y];
+                    counter++;
+                    if (left) {
+                        total += gridNum[x - 1][y - 1];
+                        counter++;
+                    }
+                    if (right) {
+                        total += gridNum[x - 1][y + 1];
+                        counter++;
+                    }
+                }
+                if (up) {
+                    total += gridNum[x + 1][y];
+                    counter++;
+                    if (left) {
+                        total += gridNum[x + 1][y - 1];
+                        counter++;
+                    }
+                    if (right) {
+                        total += gridNum[x + 1][y + 1];
+                        counter++;
+                    }
+                }
+                if (left) {
+                    total += gridNum[x][y - 1];
+                    counter++;
+                }
+                if (right) {
+                    total += gridNum[x][y + 1];
+                    counter++;
+                }
+            }
+        }
+    }
+    return total / counter;
+}
+
+// Function to determine symbol based on input
+string Symbol(double input) {
+    if (input >= 0 && input < 35) {
+        return "L";
+    } else if (input >= 35 && input < 65) {
+        return "M";
+    } else {
+        return "H";
+    }
+}
+
+// Function to determine probability of rain
+double probability(string aP, string aCC) {
+    if (aP == "L" && aCC == "H") {
+        return 90.00;
+    } else if (aP == "L" && aCC == "M") {
+        return 80.00;
+    } else if (aP == "L" && aCC == "L") {
+        return 70.00;
+    } else if (aP == "M" && aCC == "H") {
+        return 60.00;
+    } else if (aP == "M" && aCC == "M") {
+        return 50.00;
+    } else if (aP == "M" && aCC == "L") {
+        return 40.00;
+    } else if (aP == "H" && aCC == "H") {
+        return 30.00;
+    } else if (aP == "H" && aCC == "M") {
+        return 20.00;
+    } else if (aP == "H" && aCC == "L") {
+        return 10.00;
+    } else {
+        return 0.00;
+    }
+}
+
+// Function to display ASCII graphics based on probability
+void ASCIIGraphics(int probability) {
+    if (probability == 90) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+        cout << "\\\\\\" << endl;
+    } else if (probability == 80) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+        cout << " \\\\" << endl;
+    } else if (probability == 70) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+        cout << "  \\\\" << endl;
+    } else if (probability == 60) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+        cout << "   \\\\" << endl;
+    } else if (probability == 50) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+        cout << "    \\" << endl;
+    } else if (probability == 40) {
+        cout << "~~~~" << endl;
+        cout << "~~~~~" << endl;
+    } else if (probability == 30) {
+        cout << "~~~" << endl;
+        cout << "~~~~" << endl;
+    } else if (probability == 20) {
+        cout << "~~" << endl;
+        cout << "~~~" << endl;
+    } else if (probability == 10) {
+        cout << "~" << endl;
+        cout << "~~" << endl;
+    }
+}
+
+
+// Updated Report function to match required output
+void Report(string** city, int** cloudGrid, int** preGrid, int** grid, int column, int row) {
+    int uniqueCityCount = 0;
+    vector<string> uniqueCities;
+
+    cout << "\nWeather Forecast Summary Report\n";
+    cout << "-----------------------------------------------\n";
+
+    for (int x = 0; x < row; x++) {
+        for (int y = 0; y < column; y++) {
+            if (city[x][y] != "" && find(uniqueCities.begin(), uniqueCities.end(), city[x][y]) == uniqueCities.end()) {
+                uniqueCities.push_back(city[x][y]);
+                double avgCover = calculateCityAverage(city, cloudGrid, column, row, city[x][y]);
+                double avgPressure = calculateCityAverage(city, preGrid, column, row, city[x][y]);
+                string avgCoverSymbol = Symbol(avgCover);
+                string avgPressureSymbol = Symbol(avgPressure);
+                int probabilityValue = probability(avgPressureSymbol, avgCoverSymbol);
+
+                cout << "City Name   : " << city[x][y] << endl;
+                cout << "City ID     : " << grid[x][y] << endl;
+                cout << "Ave. Cloud Cover (ACC) : " << fixed << setprecision(2) << avgCover << " (" << avgCoverSymbol << ")" << endl;
+                cout << "Ave. Pressure (AP)     : " << fixed << setprecision(2) << avgPressure << " (" << avgPressureSymbol << ")" << endl;
+                cout << "Probability of Rain (%) : " << probabilityValue << ".00" << endl;
+                ASCIIGraphics(probabilityValue);
+                cout << "-----------------------------------------------\n";
+                uniqueCityCount++;
+            }
+        }
+    }
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+// Usage in the weather forecast summary report function
+void displayWeatherForecastSummary(const vector<vector<int>>& cloudCoverage, const vector<vector<int>>& pressureData, const vector<City>& cities, int gridXRange, int gridYRange) {
+    cout << "\nWeather Forecast Summary Report\n";
+    cout << "-----------------------------------------------\n";
+
+// Get unique city IDs
+vector<int> uniqueCityIDs;
+for (const auto& city : cities) {
+    if (find(uniqueCityIDs.begin(), uniqueCityIDs.end(), city.city_id) == uniqueCityIDs.end()) {
+        uniqueCityIDs.push_back(city.city_id);
+    }
+}
+
+// Process each unique city ID
+for (int cityID : uniqueCityIDs) {
+    // Find the first occurrence of the city to get its name
+    auto it = find_if(cities.begin(), cities.end(), [cityID](const City& city) { return city.city_id == cityID; });
+    string cityName = it->city_name;
+
+    // Call the corrected calculateACC function
+    pair<double, char> accResult = calculateACC(cloudCoverage, cities, cityID, gridXRange, gridYRange);
+    
+    // Call the (to be defined) calculateAP function
+    pair<double, char> apResult = calculateAP(pressureData, cities, cityID, gridXRange, gridYRange);
+    
+    pair<int, string> rainResult = determineRainProbability(accResult.second, apResult.second);
+
+    // Print the results
+    cout << "City Name   : " << cityName << endl;
+    cout << "City ID     : " << cityID << endl;
+    cout << "Ave. Cloud Cover (ACC) : " << fixed << setprecision(2) << accResult.first << " (" << accResult.second << ")" << endl;
+    cout << "Ave. Pressure (AP)     : " << fixed << setprecision(2) << apResult.first << " (" << apResult.second << ")" << endl;
+    cout << "Probability of Rain (%) : " << rainResult.first << ".00" << endl;
+    cout << rainResult.second << endl;
+    cout << "-----------------------------------------------\n";
+}
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+
+pair<double, char> calculateAP(const vector<vector<int>>& pressureData, const vector<City>& cities, int cityID, int gridXRange, int gridYRange) {
+    int minX = gridXRange, minY = gridYRange, maxX = 0, maxY = 0;
+
+    // Find the bounding box for the city with the given ID
+    for (const auto& city : cities) {
+        if (city.city_id == cityID) {
+            minX = min(minX, city.x);
+            minY = min(minY, city.y);
+            maxX = max(maxX, city.x);
+            maxY = max(maxY, city.y);
+        }
+    }
+
+    // Expand the bounding box by 1 unit in each direction (for perimeter)
+    minX = max(0, minX - 1);
+    minY = max(0, minY - 1);
+    maxX = min(gridXRange, maxX + 1);
+    maxY = min(gridYRange, maxY + 1);
+
+    // Collect pressure values within the bounding box
+    vector<int> values;
+    for (int y = minY; y <= maxY; ++y) {
+        for (int x = minX; x <= maxX; ++x) {
+            values.push_back(pressureData[y][x]);
+        }
+    }
+
+    // Calculate average pressure
+    double sum = accumulate(values.begin(), values.end(), 0);
+    double avg = sum / values.size();
+    char symbol = (avg < 35) ? 'L' : (avg < 65) ? 'M' : 'H';
+
+    return {avg, symbol};
+}
+
+
+
+
+
+
+
+
+// Function to display atmospheric pressure map (LMH symbols)
+void displayPressureLMH(const vector<vector<int>>& pressureData, int gridXRange, int gridYRange) {
+    cout << "\nAtmospheric Pressure Map (LMH Symbols):\n";
+
+    // Print top boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print grid rows with boundaries and LMH symbols
+    for (int y = gridYRange; y >= 0; --y) {
+        cout << setw(2) << y << "#";  // Row index with left boundary
+        for (int x = 0; x <= gridXRange; ++x) {
+            int value = pressureData[y][x];
+            char symbol = (value < 35) ? 'L' : (value < 65) ? 'M' : 'H';  // Determine LMH symbol
+            cout << " " << symbol << " ";
+        }
+        cout << "#" << endl;  // Right boundary
+    }
+
+    // Print bottom boundary
+    cout << "  #";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << " # ";
+    }
+    cout << "#" << endl;
+
+    // Print column indices
+    cout << "  ";
+    for (int x = 0; x <= gridXRange; ++x) {
+        cout << setw(3) << x;
+    }
+    cout << endl;
+
+    cout << "\nPress <enter> to go back to main menu...";
+    cin.ignore();
+    cin.get();
+}
+
+
+
+
+
+
+
+
+// Main function========================================================================
+// Main function
+int main() {
+    int gridXRange = 0, gridYRange = 0;
+    string cityFile, cloudFile, pressureFile;
+    vector<City> cities;
+    vector<vector<int>> cloudCoverage;
+    vector<vector<int>> pressureData;
+    bool configLoaded = false;
+
+    while (true) {
+        displayMainMenu();
+        cout << "Please enter your choice: ";
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                cities.clear();
+                cloudCoverage.clear();
+                pressureData.clear();
+                gridXRange = gridYRange = 0;
+                cityFile = cloudFile = pressureFile = "";
+                configLoaded = false;
+
+                string configFilename;
+                cout << "\nPlease enter config filename: ";
+                cin >> configFilename;
+
+                if (readConfigFile(configFilename, gridXRange, gridYRange, cityFile, cloudFile, pressureFile)) {
+                    if (readCityLocations(cityFile, cities)) {
+                        configLoaded = true;
+                        if (readCloudCoverage(cloudFile, cloudCoverage, gridXRange, gridYRange)) {
+                            if (readCloudCoverage(pressureFile, pressureData, gridXRange, gridYRange)) {
+                                cout << "\n\n";
+                            } else {
+                                cerr << "Error: Failed to load pressure data. Returning to main menu.\n";
+                            }
+                        } else {
+                            cerr << "Error: Failed to load cloud coverage data. Returning to main menu.\n";
+                        }
+                    } else {
+                        cerr << "Error: Failed to load city locations. Returning to main menu.\n";
+                    }
+                }
+                break;
+            }
+            case 2:
+                if (configLoaded) {
+                    displayCityMap(gridXRange, gridYRange, cities);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+                break;
+            case 3:
+                if (configLoaded) {
+                    displayCloudCoverageIndex(cloudCoverage, gridXRange, gridYRange);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+                break;
+            case 4:
+                if (configLoaded) {
+                    displayCloudCoverageLMH(cloudCoverage, gridXRange, gridYRange);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+            case 5:
+                if (configLoaded) {
+                    displayPressureIndex(pressureData, gridXRange, gridYRange);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+                break;
+            case 6:
+                if (configLoaded) {
+                    displayPressureLMH(pressureData, gridXRange, gridYRange);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+                break;
+                break;
+            case 7:
+                if (configLoaded) {
+                    displayWeatherForecastSummary(cloudCoverage, pressureData, cities, gridXRange, gridYRange);
+                } else {
+                    cerr << "Error: Configuration not loaded. Please load a configuration file first.\n";
+                }
+                break;
+            case 8:
+                cout << "Exiting program. Goodbye!\n";
+                return 0;
+            default:
+                cerr << "Invalid choice. Please try again.\n";
+                break;
+        }
+    }
+
+    return 0;
+}
